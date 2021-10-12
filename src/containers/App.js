@@ -3,27 +3,28 @@ import CardList from "../components/CardList";
 import SearchBox from "../components/SearchBox";
 import Scroll from "../components/Scroll";
 import ErrorBoundary from "../components/ErrorBoundry";
+import { useSelector, useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../state/index";
 
 import "../styles/App.css";
 
 export default function App() {
   const [robots, setRobots] = useState([]);
-  const [searchField, setSearchField] = useState("");
-  const [count, setCount] = useState(0);
+ 
+  const state = useSelector((state) => state.searchField);
+  const dispatch = useDispatch();
+
+  const { setSearchField } = bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
     fetch("https://jsonplaceholder.cypress.io/users")
       .then((response) => response.json())
       .then((user) => setRobots(user));
-      console.log(robots);
   }, []);
 
-  useEffect(() => {
-    console.log(count);
-  }, [count]);
-
   const filteredRobots = robots.filter((robot) => {
-    return robot.name.toLowerCase().includes(searchField.toLowerCase());
+    return robot.name.toLowerCase().includes(state.searchField.toLowerCase());
   });
 
   const onSearchChange = (event) => {
@@ -37,7 +38,6 @@ export default function App() {
   ) : (
     <div className="tc">
       <h1 className="f1">RoboFriends</h1>
-      <button onClick={() => setCount(count+1)}>Click Me!</button>
       <SearchBox searchChange={onSearchChange} />
       <Scroll>
         <ErrorBoundary>
